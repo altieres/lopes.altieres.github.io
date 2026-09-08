@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailscale no 5G, trocar de operadora não resolve — Altieres Lopes</title>
+    <meta name="description" content="Passei dois anos achando que o acesso remoto à minha rede de casa quebrava por culpa da operadora. Era MTU.">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <article class="post">
+        <div class="container">
+            <p class="post-back"><a href="../index.html#anotacoes">← Anotações &amp; Leituras</a></p>
+
+            <h1 class="post-title">Tailscale no 5G, trocar de operadora não resolve</h1>
+            <p class="post-meta"><time datetime="2026-09-08">8 de setembro de 2026</time></p>
+
+            <p>Por uns dois anos eu não consegui acessar a minha rede de casa pelo
+            celular. Em Wi-Fi, de casa ou do escritório, tudo funcionava. Nos dados
+            móveis, não. Eu estava na Vivo e conclui o óbvio: problema da operadora.
+            Troquei para a TIM, em parte por causa disso. Não adiantou.</p>
+
+            <p>O que mais me despistou é que a conexão <em>abria</em>. O ping
+            respondia, a porta aparecia como aberta, o SSH até mostrava o banner
+            inicial. Só que o Home Assistant dava timeout, o SSH travava logo em
+            seguida e cópia de arquivo congelava no meio. Isso tem cara de proxy
+            reverso mal configurado ou de certificado, não de rede.</p>
+
+            <p>Nesses dois anos eu mexi na configuração da tailnet, habilitei e
+            desabilitei o exit node, tentei acessar por IP e por nome, por HTTP e
+            por HTTPS. Nenhuma dessas tentativas chegou perto, porque todas
+            estavam na camada errada.</p>
+
+            <p>Era MTU (Maximum Transmission Unit), o tamanho máximo de pacote que
+            um caminho de rede aceita.</p>
+
+            <h2>Por que o pacote sumia sem ninguém avisar</h2>
+
+            <p>A interface do Tailscale usava MTU de 1280 bytes. O caminho pelo 5G
+            só passava 1200. Tudo acima disso era descartado — e, o mais
+            importante, descartado <strong>em silêncio</strong>.</p>
+
+            <p>Isso explica o comportamento que parecia contraditório:</p>
+
+            <ul>
+                <li>Handshake TCP e ping são pacotes pequenos, então passam. Por isso a conexão "abre".</li>
+                <li>Resposta HTTP, troca de chaves do SSH e transferência de arquivo são pacotes cheios, então somem.</li>
+            </ul>
+
+            <p>Ou seja, eu conseguia conectar em tudo e não recebia nada.</p>
+
+            <h2>O detalhe que faz isso ser invisível</h2>
+
+            <p>Numa conexão TCP comum, os dois lados combinam no início o tamanho
+            máximo de segmento, o MSS (Maximum Segment Size), cada um olhando o MTU
+            da sua interface de saída. Essa negociação é honesta: a interface que o
+            TCP consulta é a mesma que vai colocar o pacote no fio.</p>
+
+            <p>Com uma VPN, não é. O meu TCP olhava a interface do Tailscale, via
+            1280 e concluía que estava seguro. Contudo, aquele pacote ainda seria
+            embrulhado pelo WireGuard antes de sair de verdade:</p>
+
+            <pre><code>[ IPv6 40 + UDP 8 + WireGuard 32 ] + [ pacote interno 1280 ] = 1360 no fio</code></pre>
+
+            <p>O TCP de dentro nunca fica sabendo desses 80 bytes de cabeçalho. Ele
+            negociou corretamente para um link que não existe.</p>
+
+            <h2>Por que só a VPN quebra, e o resto da internet não</h2>
+
+            <p>Essa foi a parte que me deixou mais tempo procurando no lugar
+            errado. Se o caminho móvel é ruim, por que só o meu acesso de casa
+            sofria, e nenhum site normal?</p>
+
+            <p>O caminho móvel também tem MTU reduzido para o tráfego comum: a rede
+            da operadora encapsula tudo internamente, no núcleo 5G, e isso come
+            algumas centenas de bytes. A diferença é que a operadora muito
+            provavelmente aplica <em>MSS clamping</em> no gateway dela. Ela
+            intercepta o início das suas conexões TCP e reescreve o MSS para um
+            valor que cabe. Você nunca percebe.</p>
+
+            <p>No entanto, ela só consegue fazer isso com o que ela enxerga. O
+            tráfego do Tailscale sai como UDP opaco e criptografado, então não há
+            como ver que existe um TCP lá dentro, muito menos reescrever o MSS
+            dele. O conserto automático que protege o resto da minha internet
+            simplesmente não alcança a VPN.</p>
+
+            <p>Sabendo disso, trocar de operadora nunca poderia ter funcionado.</p>
+
+            <h2>E o mecanismo que existe justamente para isso?</h2>
+
+            <p>Existe: o PMTU discovery (Path MTU Discovery). O roteador que não
+            consegue passar o pacote devolve um ICMP (Internet Control Message
+            Protocol) do tipo "Packet Too Big", e a origem se ajusta sozinha. O
+            Tailscale implementa isso.</p>
+
+            <p>Só que operadora móvel costuma filtrar esse ICMP. Resultado: o
+            pacote é descartado e ninguém avisa ninguém. É por isso que se chama
+            <em>blackhole</em>, e por isso atualizar o Tailscale não resolve este
+            caso específico — eu já estava numa versão que tem PMTU discovery.</p>
+
+            <h2>Como medir o teto do seu caminho</h2>
+
+            <p>Ping com a flag de "don't fragment", variando o tamanho. O maior
+            que passar, somado a 28 bytes de cabeçalho, é o teto real. No macOS a
+            flag é <code>-D</code>; no Linux, <code>-M do</code>.</p>
+
+            <pre><code>for s in 1100 1160 1172 1180 1252; do
+  printf "%s: " $s
+  ping -c 2 -t 5 -D -s $s 100.68.139.13 >/dev/null 2>&1 \
+    &amp;&amp; echo OK || echo FALHOU
+done</code></pre>
+
+            <p>No meu teste passou até 1172 (pacote de 1200) e falhou em 1175.</p>
+
+            <h2>São 2 ajustes, e os dois no servidor</h2>
+
+            <p>Corrigi no meu Rock Pi, que roda o Home Assistant e é o subnet
+            router da casa. Isso é essencial: <strong>o iOS não permite ajustar
+            MTU</strong>. Qualquer solução aplicada no cliente jamais atenderia o
+            celular, que era exatamente o meu caso de uso.</p>
+
+            <p>O primeiro ajuste é fixar o MTU do túnel, em
+            <code>/etc/default/tailscaled</code>:</p>
+
+            <pre><code>TS_DEBUG_MTU=1200</code></pre>
+
+            <p>Depois, <code>systemctl restart tailscaled</code>. Isso cobre o
+            sentido servidor para cliente, que é onde as respostas HTTP sumiam.
+            Sozinho, já devolveu a navegação do dia a dia. O Home Assistant abriu
+            no celular na hora.</p>
+
+            <p>O segundo ajuste é o MSS clamping, que cobre o sentido inverso, onde
+            o celular continua achando que pode mandar 1280:</p>
+
+            <pre><code>iptables -t mangle -A OUTPUT  -p tcp --tcp-flags SYN,RST SYN \
+  -o tailscale0 -j TCPMSS --set-mss 1160
+iptables -t mangle -A FORWARD -p tcp --tcp-flags SYN,RST SYN \
+  -o tailscale0 -j TCPMSS --set-mss 1160</code></pre>
+
+            <p>A chain <code>OUTPUT</code> atende os serviços do próprio servidor e
+            a <code>FORWARD</code>, os outros aparelhos da LAN que ele roteia. Usei
+            1160 em vez de 1200 de propósito, para ter margem quando a operadora
+            entregar um caminho um pouco pior que o medido.</p>
+
+            <p>O clamping faz o servidor anunciar o limite já no handshake, então
+            <strong>o cliente se ajusta sozinho</strong>, sem configurar nada nele.
+            Foi o que me permitiu desfazer um ajuste manual de MTU que eu tinha
+            feito no Mac como paliativo.</p>
+
+            <p>Lembrando que essas regras somem no reboot. Eu não tinha o
+            <code>iptables-persistent</code> instalado e preferi não adicionar
+            pacote: coloquei as regras num script e chamei ele por um drop-in do
+            systemd, para nascerem junto com a interface do Tailscale.</p>
+
+            <p>O script vai em <code>/usr/local/sbin/ts-mss-clamp.sh</code>. Ele é
+            o mesmo par de regras acima, só que percorrendo tambem o
+            <code>ip6tables</code>, e apagando a regra antes de inserir — desta
+            forma posso rodar de novo sem empilhar regra duplicada:</p>
+
+            <pre><code>#!/bin/sh
+MSS=1160
+for BIN in iptables ip6tables; do
+  for CH in OUTPUT FORWARD; do
+    R="-p tcp --tcp-flags SYN,RST SYN -o tailscale0 -j TCPMSS --set-mss $MSS"
+    while $BIN -w -t mangle -C $CH $R 2>/dev/null; do
+      $BIN -w -t mangle -D $CH $R
+    done
+    $BIN -w -t mangle -A $CH $R
+  done
+done</code></pre>
+
+            <p>Não esqueça do <code>chmod +x</code>. O drop-in fica em
+            <code>/etc/systemd/system/tailscaled.service.d/mss-clamp.conf</code>:</p>
+
+            <pre><code>[Service]
+ExecStartPost=/bin/sh -c "sleep 5; /usr/local/sbin/ts-mss-clamp.sh"</code></pre>
+
+            <p>Depois, <code>systemctl daemon-reload</code>. O
+            <code>sleep 5</code> está ali porque a <code>tailscale0</code> não
+            existe no instante em que o serviço sobe.</p>
+
+            <p>Apenas como lembrete: os dois ajustes ficam ativos ao mesmo tempo, e
+            não um em vez do outro. O <code>TS_DEBUG_MTU</code> cuida do sentido
+            servidor para cliente e o clamping, do cliente para servidor. Para
+            conferir se sobreviveram a um reboot:</p>
+
+            <pre><code>ip link show tailscale0 | grep -o "mtu [0-9]*"
+iptables -t mangle -S | grep TCPMSS
+ip6tables -t mangle -S | grep TCPMSS</code></pre>
+
+            <h2>Onde isso não serve</h2>
+
+            <p>O teto de 1200 é o do <em>meu</em> caminho, medido num dia, numa
+            operadora, com conexão direta. Em outra rede o número muda. Se o
+            sintoma voltar, o certo é medir de novo, não copiar o meu valor.</p>
+
+            <p>O MSS clamping também vale apenas para TCP. Se algo seu trafega em
+            UDP ou QUIC em volume, não está coberto — no meu caso, Home Assistant e
+            acesso a arquivos são TCP, então na prática resolveu.</p>
+
+            <p>Por fim, o diagnóstico só andou quando percebi que o SSH falhava do
+            <em>mesmo jeito</em> que o navegador. Serviço web travando admite
+            dezenas de causas; dois protocolos sem relação falhando igual só sobra
+            caminho de rede. Se eu tivesse reparado nisso antes, teria economizado
+            dois anos e uma troca de operadora.</p>
+
+            <p>Alguém aí também trocou de operadora por um problema que não era
+            dela?</p>
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <p>Parte do projeto coletivo <a href="https://altieres.com.br" target="_blank">altieres.com.br</a></p>
+            <p>© Altieres Lopes. Handmade. Mind-coded.</p>
+        </div>
+    </footer>
+</body>
+</html>

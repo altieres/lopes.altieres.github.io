@@ -544,3 +544,143 @@ footer a:hover {
         scroll-behavior: auto !important;
     }
 }
+
+/* ============ Posts (Anotações) ============ */
+.post {
+    padding: 60px 0 40px;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.post .container {
+    text-align: left;
+}
+
+.post-back a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.post-back a:hover {
+    color: var(--accent-cyan);
+}
+
+.post-title {
+    font-size: 2rem;
+    line-height: 1.25;
+    margin: 24px 0 8px;
+    color: var(--text-primary);
+    text-align: left;
+}
+
+.post-meta {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 40px;
+}
+
+.post h2 {
+    font-size: 1.3rem;
+    text-align: left;
+    margin: 40px 0 16px;
+    color: var(--accent-cyan);
+}
+
+.post p {
+    line-height: 1.75;
+    color: var(--text-primary);
+    margin: 0 0 20px;
+}
+
+.post li {
+    line-height: 1.75;
+    color: var(--text-primary);
+}
+
+.post ul {
+    margin: 0 0 20px 20px;
+}
+
+.post li {
+    margin-bottom: 10px;
+}
+
+.post strong {
+    color: var(--accent-cyan);
+}
+
+.post em {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Código */
+.post code {
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 0.88em;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 2px 6px;
+    color: var(--accent-cyan);
+}
+
+.post pre {
+    background: var(--bg-darker);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-dim);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+.post pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    white-space: pre;
+}
+
+/* Lista de anotações na home */
+.notes-list {
+    list-style: none;
+    margin: 24px 0 0;
+    padding: 0;
+}
+
+.notes-list li {
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 0;
+}
+
+.notes-list li:last-child {
+    border-bottom: none;
+}
+
+.notes-list a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1.05rem;
+}
+
+.notes-list a:hover {
+    color: var(--accent-cyan);
+}
+
+.notes-list .note-date {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+    .post-title { font-size: 1.5rem; }
+    .post pre { padding: 12px 14px; }
+    .post pre code { font-size: 0.78rem; }
+}
