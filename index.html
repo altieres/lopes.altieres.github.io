@@ -4,60 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Altieres Lopes — Handmade. Mind-coded.</title>
+    <meta name="description" content="Altieres Lopes: software por profissão, móveis e circuitos por hobbie. Projetos, laboratório e anotações.">
+    <meta name="theme-color" content="#0D0F11">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <a class="skip-link" href="#sobre">Pular para o conteúdo</a>
+
     <!-- Header / Hero -->
-    <header>
-        <div class="container">
-            <div class="logo-container">
-                <img src="a-logo.jpg" alt="Altieres Lopes Logo">
-            </div>
-            <h1>Altieres Lopes</h1>
-            <p class="tagline"><span>Handmade.</span> Mind-coded.</p>
+    <header class="site-header">
+        <div class="container topbar">
+            <a class="brand-mark" href="#topo" aria-label="Altieres Lopes, início">
+                <img src="assets/logo-a.webp" alt="" width="36" height="36">
+            </a>
+            <nav aria-label="Seções">
+                <ul>
+                    <li><a href="#sobre">Sobre</a></li>
+                    <li><a href="#projetos">Projetos</a></li>
+                    <li><a href="#laboratorio">Laboratório</a></li>
+                    <li><a href="#anotacoes">Anotações</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
+            </nav>
         </div>
-        <div class="scroll-indicator">↓</div>
+
+        <div class="container hero" id="topo">
+            <picture class="hero-logo">
+                <source srcset="assets/logo-handmade-mind-coded.webp" type="image/webp">
+                <img src="assets/logo-handmade-mind-coded.jpg" alt="Logo: letra A metade madeira, metade circuito, com os dizeres Handmade. Mind-coded." width="1200" height="347" fetchpriority="high">
+            </picture>
+            <h1>Altieres Lopes</h1>
+            <p class="label hero-disciplines">Software <span aria-hidden="true">·</span> Eletrônica <span aria-hidden="true">·</span> Marcenaria</p>
+        </div>
     </header>
 
+    <main>
     <!-- Sobre -->
     <section id="sobre">
         <div class="container">
-            <h2>Sobre</h2>
-            <p>Sou Altieres Lopes. Construo software profissionalmente, desenvolvo móveis e circuitos como hobbie.</p>
-            <p>Gosto de unir o raciocínio técnico ao trabalho manual; é nessas horas que as melhores ideias surgem.</p>
-            <p class="now-content">
-              Este é o meu espaço dentro do projeto coletivo <a href="https://altieres.com.br" target="_blank" rel="noopener noreferrer"><strong>altieres.com.br</strong></a>, que reúne pessoas de mesmo nome.
-            </p>
+            <div class="section-head">
+                <span class="section-index" aria-hidden="true">01</span>
+                <h2>Sobre</h2>
+            </div>
+            <div class="prose">
+                <p class="lead">Sou Altieres Lopes. Construo software profissionalmente, desenvolvo móveis e circuitos como hobbie.</p>
+                <p>Gosto de unir o raciocínio técnico ao trabalho manual; é nessas horas que as melhores ideias surgem.</p>
+                <p class="now-content">
+                  Este é o meu espaço dentro do projeto coletivo <a href="https://altieres.com.br" target="_blank" rel="noopener noreferrer"><strong>altieres.com.br</strong></a>, que reúne pessoas de mesmo nome.
+                </p>
+            </div>
         </div>
     </section>
 
     <!-- Projetos -->
     <section id="projetos">
         <div class="container">
-            <h2>Projetos</h2>
-            <p>Seleção de trabalhos e iniciativas</p>
+            <div class="section-head">
+                <span class="section-index" aria-hidden="true">02</span>
+                <h2>Projetos</h2>
+            </div>
+            <p class="section-intro">Seleção de trabalhos e iniciativas</p>
             <div class="projects-grid">
               <a href="https://www.granatum.com.br/" target="_blank" rel="noopener noreferrer" class="card">
-                <h3>Granatum</h3>
+                <span class="label card-category">Software</span>
+                <h3>Granatum <span class="card-arrow" aria-hidden="true">↗</span></h3>
                 <p>Plataforma financeira com integrações open finance, foco em clareza e automação.</p>
               </a>
               <a href="https://www.escolalumiarpocos.com.br/" target="_blank" rel="noopener noreferrer" class="card">
-                <h3>Lumiar Poços de Caldas</h3>
+                <span class="label card-category">Educação</span>
+                <h3>Lumiar Poços de Caldas <span class="card-arrow" aria-hidden="true">↗</span></h3>
                 <p>Experiências de aprendizagem baseadas em projetos.</p>
               </a>
               <a href="https://atelie.software/" target="_blank" rel="noopener noreferrer" class="card">
-                <h3>Ateliê de Software</h3>
+                <span class="label card-category">Software</span>
+                <h3>Ateliê de Software <span class="card-arrow" aria-hidden="true">↗</span></h3>
                 <p>Soluções sob medida para empresas que fazem a diferença.</p>
               </a>
               <a href="https://webgoal.com.br/" target="_blank" rel="noopener noreferrer" class="card">
-                <h3>Webgoal</h3>
+                <span class="label card-category">Software</span>
+                <h3>Webgoal <span class="card-arrow" aria-hidden="true">↗</span></h3>
                 <p>Soluções web modernas e escaláveis para o seu negócio.</p>
               </a>
               <div class="card">
+                  <span class="label card-category">Café</span>
                   <h3>HODL Brews</h3>
                   <p>Café artesanal inspirado na cultura Bitcoin, edições limitadas, design próprio.</p>
               </div>
               <div class="card">
+                  <span class="label card-category">Família</span>
                   <h3>Benjamim</h3>
                   <p>Maior e mais abençoada das criações, inspira e ilumina cada um dos meus dias.</p>
               </div>
@@ -68,28 +107,36 @@
     <!-- Laboratório -->
     <section id="laboratorio">
         <div class="container">
-            <h2>Laboratório (breve)</h2>
-            <p>Pequenos protótipos, provas de conceito e rabiscos técnicos.</p>
-            <ul class="lab-list">
+            <div class="section-head">
+                <span class="section-index" aria-hidden="true">03</span>
+                <h2>Laboratório <span class="badge">breve</span></h2>
+            </div>
+            <p class="section-intro">Pequenos protótipos, provas de conceito e rabiscos técnicos.</p>
+            <ol class="lab-list">
                 <li>Projetos simples para tarefas do dia a dia.</li>
                 <li>Testes de IA aplicados aos mais diversos objetivos.</li>
                 <li>Brincadeiras com sensores, solda e madeira.</li>
-            </ul>
+            </ol>
         </div>
     </section>
 
     <!-- Anotações -->
     <section id="anotacoes">
         <div class="container">
-            <h2>Anotações &amp; Leituras</h2>
-            <p>Coisas que aprendi, tentei ou achei úteis, com o contexto inteiro:
-            o que eu achava que era o problema, o que não funcionou no caminho e
-            onde a solução não serve.</p>
-            <p>Nada definitivo — só o suficiente para seguir construindo.</p>
+            <div class="section-head">
+                <span class="section-index" aria-hidden="true">04</span>
+                <h2>Anotações &amp; Leituras</h2>
+            </div>
+            <div class="prose">
+                <p>Coisas que aprendi, tentei ou achei úteis, com o contexto inteiro:
+                o que eu achava que era o problema, o que não funcionou no caminho e
+                onde a solução não serve.</p>
+                <p>Nada definitivo — só o suficiente para seguir construindo.</p>
+            </div>
             <ul class="notes-list">
                 <li>
+                    <time class="note-date" datetime="2026-09-08">8 de setembro de 2026</time>
                     <a href="anotacoes/tailscale-mtu-5g.html">Tailscale no 5G, trocar de operadora não resolve</a>
-                    <span class="note-date">8 de setembro de 2026</span>
                 </li>
             </ul>
         </div>
@@ -98,26 +145,30 @@
     <!-- Contato -->
     <section id="contato">
         <div class="container">
-            <h2>Contato</h2>
-            <p style="text-align: center;">Curte construir coisas? Vamos conversar sem pressa.</p>
+            <div class="section-head">
+                <span class="section-index" aria-hidden="true">05</span>
+                <h2>Contato</h2>
+            </div>
+            <p class="section-intro">Curte construir coisas? Vamos conversar sem pressa.</p>
 
             <form id="my-form" action="https://formspree.io/f/xnngogla" method="POST">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" autocomplete="email" required>
 
                 <label for="message">Mensagem:</label>
                 <textarea id="message" name="message" required></textarea>
 
                 <button id="my-form-button" type="submit">Enviar</button>
-                <p id="my-form-status"></p>
+                <p id="my-form-status" role="status" aria-live="polite"></p>
             </form>
         </div>
     </section>
+    </main>
 
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>Parte do projeto coletivo <a href="https://altieres.com.br" target="_blank">altieres.com.br</a></p>
+            <p>Parte do projeto coletivo <a href="https://altieres.com.br" target="_blank" rel="noopener noreferrer">altieres.com.br</a></p>
             <p>© Altieres Lopes. Handmade. Mind-coded.</p>
         </div>
     </footer>
