@@ -697,6 +697,110 @@ footer p {
     white-space: pre;
 }
 
+/* Página de produto (ex.: rótulo do café) */
+.product-label {
+    margin: 2.5rem 0 0;
+    max-width: 460px;
+}
+
+.product-label img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+/* Rótulo atual + o antigo, menor, como referência */
+.label-pair {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+}
+
+.label-pair .product-label {
+    margin: 0;
+    flex: 0 1 460px;
+}
+
+.label-pair .product-label-old {
+    flex: 0 1 170px;
+}
+
+@media (max-width: 600px) {
+    .label-pair {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .label-pair .product-label {
+        flex: none;
+        width: 100%;
+    }
+
+    .label-pair .product-label-old {
+        width: 45%;
+    }
+}
+
+.post figcaption {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Ficha técnica: linhas finas, rótulo em caixa-alta à esquerda */
+.spec-list {
+    margin: 2rem 0 0;
+    border-top: 1px solid var(--border);
+}
+
+.spec-list div {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.spec-list dt {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.spec-list dd {
+    color: var(--text-primary);
+}
+
+/* Fotos: a primeira ocupa a largura toda, as outras lado a lado */
+.photo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.photo-grid figure {
+    margin: 0;
+}
+
+.photo-grid .photo-wide {
+    grid-column: 1 / -1;
+}
+
+.photo-grid img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+@media (max-width: 600px) {
+    .photo-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 600px) {
     .post pre { padding: 0.75rem 0.9rem; }
     .post pre code { font-size: 0.78rem; }
