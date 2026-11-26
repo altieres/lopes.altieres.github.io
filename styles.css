@@ -363,6 +363,10 @@ a.card:hover .card-arrow {
     top: -0.2em;
 }
 
+.lab-projects {
+    margin-bottom: 2.5rem;
+}
+
 .lab-list {
     list-style: none;
     counter-reset: lab;
@@ -799,6 +803,28 @@ footer p {
     .photo-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Foto solta no meio do texto */
+.post-photo {
+    margin: 2rem 0 2.25rem;
+}
+
+.post-photo img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.post-photo-portrait {
+    max-width: 420px;
+}
+
+.post figcaption a {
+    color: var(--accent);
+}
+
+.post figcaption a:hover {
+    color: var(--accent-hover);
 }
 
 @media (max-width: 600px) {
